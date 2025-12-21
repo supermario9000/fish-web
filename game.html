@@ -8,6 +8,67 @@
     <link rel="stylesheet" href="game.css">
 </head>
 <body>
-	
+	<div class="game_main">
+        <div class="stat_bar">
+            <div class="counter">Time: <span id="timer-value">0</span>s</div>
+            <div class="counter">Score: <span id="score-value">0</span></div>
+            <div class="counter">Mistake count: <span id="mistake-count">0</span></div>
+        </div>
+        <div class="actions">
+            <button onclick="startGame()" class="start_button"></button>
+            <button onclick="restart()" class="restart_button"></button>
+            <a href="index.html" class="end_button"></a>
+        </div>
+        <div id="level-easy" class="level-container">
+
+        </div>
+        <div id="level-medium" class="level-container hidden">
+
+        </div>
+        <div id="level-hard" class="level-container hidden">
+
+        </div>
+    </div>
+
+    <div id="completion-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Level Complete!</h2>
+            <p>Time: <span id="modal-time">0</span>s</p>
+            <p>Score: <span id="modal-score">0</span></p>
+            <p>Mistakes: <span id="modal-mistakes">0</span></p>
+            <form id="scoreboard-form">
+                <label for="username">Enter your username:</label>
+                <input type="text" id="username" name="username" required placeholder="Your name">
+                <button type="submit" class="modal-button">Save to Scoreboard</button>
+                <button type="button" class="modal-button" onclick="closeModal()">Close</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scoreboard Modal -->
+    <div id="scoreboard-modal" class="modal hidden">
+        <div class="modal-content scoreboard-content">
+            <h2>Leaderboard - <span id="scoreboard-level">Easy</span></h2>
+            <table class="scoreboard-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Username</th>
+                        <th>Time (s)</th>
+                        <th>Score</th>
+                        <th>Mistakes</th>
+                    </tr>
+                </thead>
+                <tbody id="scoreboard-body">
+                </tbody>
+            </table>
+            <div class="scoreboard-actions">
+                <button class="modal-button" onclick="playAgain()">Play Again</button>
+                <a href="index.html" class="modal-button modal-link">Home</a>
+            </div>
+        </div>
+    </div>
+    <script src="game.js"></script>
 </body>
+
 </html>

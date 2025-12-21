@@ -1,0 +1,18 @@
+{
+  "entries": [
+    {
+      "username": "Speed Master",
+      "time": 42.500,
+      "score": 6,
+      "mistakes": 1,
+      "date": "2025-12-21T10:30:00.000Z"
+    },
+    {
+      "username": "Card Guru",
+      "time": 45.200,
+      "score": 6,
+      "mistakes": 2,
+      "date": "2025-12-21T10:45:00.000Z"
+    }
+  ]
+}
