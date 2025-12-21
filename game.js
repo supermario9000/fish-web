@@ -271,6 +271,16 @@ function playAgain() {
     startGame();
 }
 
+function nextLevel() {
+    const levelOrder = ['easy', 'medium', 'hard'];
+    const currentIndex = levelOrder.indexOf(level);
+    const nextIndex = (currentIndex + 1) % levelOrder.length;
+    const nextLevelName = levelOrder[nextIndex];
+    
+    // Redirect to next level
+    window.location.href = `game.html?level=${nextLevelName}`;
+}
+
 function saveToScoreboard(username, time, pts, errs) {
     const entry = {
         username,
