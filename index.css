@@ -72,3 +72,134 @@ img {
 .start_button:hover {
 	background-image: url("assets/Simple pngs/button_start2.png");
 }
+
+.leaderboard-btn {
+	position: absolute;
+	top: 20px;
+	right: 20px;
+	padding: 12px 24px;
+	font-size: 16px;
+	font-weight: bold;
+	color: white;
+	background-color: #1868aeb5;
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: background-color 0.3s, transform 0.2s;
+	z-index: 100;
+}
+
+.leaderboard-btn:hover {
+	background-color: #1e81b0;
+	transform: scale(1.05);
+}
+
+.leaderboard-btn:active {
+	transform: scale(0.98);
+}
+
+.modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background-color: rgba(0, 0, 0, 0.6);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
+}
+
+.modal.hidden {
+	display: none;
+}
+
+.modal-content {
+	background-color: white;
+	border-radius: 15px;
+	padding: 40px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+	text-align: center;
+	width: 90%;
+	font-family: Arial, sans-serif;
+}
+
+.leaderboard-modal-content {
+	max-width: 700px;
+	max-height: 80vh;
+	overflow-y: auto;
+}
+
+.leaderboard-modal-content h2 {
+	margin-top: 0;
+	color: #154c79;
+	font-size: 28px;
+}
+
+.leaderboard-tabs {
+	display: flex;
+	gap: 10px;
+	justify-content: center;
+	margin: 20px 0;
+}
+
+.tab-btn {
+	padding: 10px 20px;
+	font-size: 14px;
+	border: 2px solid #4facfe;
+	background-color: white;
+	color: #4facfe;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: all 0.3s;
+	font-weight: bold;
+}
+
+.tab-btn.active {
+	background-color: #4facfe;
+	color: white;
+}
+
+.tab-btn:hover {
+	background-color: #4facfe;
+	color: white;
+}
+
+.scoreboard-table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 20px 0;
+	font-size: 14px;
+}
+
+.scoreboard-table thead {
+	background-color: #4facfe;
+	color: white;
+}
+
+.scoreboard-table th, .scoreboard-table td {
+	padding: 12px;
+	text-align: center;
+	border-bottom: 1px solid #ddd;
+}
+
+.scoreboard-table tbody tr:nth-child(even) {
+	background-color: #f9f9f9;
+}
+
+.modal-button {
+	padding: 12px 20px;
+	font-size: 16px;
+	border: none;
+	border-radius: 5px;
+	background-color: #4facfe;
+	color: white;
+	font-weight: bold;
+	cursor: pointer;
+	transition: background-color 0.3s;
+}
+
+.modal-button:hover {
+	background-color: #1e81b0;
+}

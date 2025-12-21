@@ -12,6 +12,8 @@
         <img src="assets/Simple pngs/Game title.png" class="title_img" alt="Game Title"/>
         <img src="assets/Simple pngs/vezliukas.png" class="big_turtle_img" alt="Turtle big"/>
 
+        <button class="leaderboard-btn" onclick="showLeaderboard()">🏆 Leaderboard</button>
+
         <div class="level_container">
             <div class="level_img_container">
                 <img src="assets/Simple pngs/Level1.png" class="container_img_1" alt="Level 1"/>
@@ -28,5 +30,30 @@
         </div>
 
     </div>
-</body>
-</html>
+
+    <!-- Leaderboard Modal -->
+    <div id="leaderboard-modal" class="modal hidden">
+        <div class="modal-content leaderboard-modal-content">
+            <h2>Leaderboards</h2>
+            <div class="leaderboard-tabs">
+                <button class="tab-btn active" onclick="switchLeaderboardLevel('easy')">Easy</button>
+                <button class="tab-btn" onclick="switchLeaderboardLevel('medium')">Medium</button>
+                <button class="tab-btn" onclick="switchLeaderboardLevel('hard')">Hard</button>
+            </div>
+            <table class="scoreboard-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Username</th>
+                        <th>Time (s)</th>
+                        <th>Score</th>
+                        <th>Mistakes</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                </tbody>
+            </table>
+            <button class="modal-button" onclick="closeLeaderboard()">Close</button>
+        </div>
+    </div>
+    <script src="index.js"></script>
