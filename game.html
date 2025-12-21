@@ -9,6 +9,19 @@
 </head>
 <body>
 	<div class="game_main">
+        <!-- Username Entry Modal -->
+        <div id="username-entry-modal" class="modal">
+            <div class="modal-content">
+                <h2>Enter Your Username</h2>
+                <p>Your scores will be automatically saved to the leaderboard</p>
+                <form id="username-entry-form">
+                    <input type="text" id="username-entry-input" name="username" required placeholder="Enter username (min 4 letters)">
+                    <div id="username-entry-error" style="color: red; font-size: 14px; margin-top: 5px; display: none; min-height: 20px;"></div>
+                    <button type="submit" id="username-entry-button" class="modal-button" disabled>Continue</button>
+                </form>
+            </div>
+        </div>
+
         <div class="stat_bar">
             <div class="counter">Time: <span id="timer-value">0</span>s</div>
             <div class="counter">Score: <span id="score-value">0</span></div>
@@ -40,16 +53,15 @@
     <div id="completion-modal" class="modal hidden">
         <div class="modal-content">
             <h2>Level Complete!</h2>
+            <p>Player: <span id="modal-player" style="font-weight: bold; color: #4caf50;"></span></p>
             <p>Time: <span id="modal-time">0</span>s</p>
             <p>Score: <span id="modal-score">0</span></p>
             <p>Mistakes: <span id="modal-mistakes">0</span></p>
-            <form id="scoreboard-form">
-                <label for="username">Enter your username:</label>
-                <input type="text" id="username" name="username" required placeholder="Your name">
-                <button type="submit" class="modal-button">Save to Scoreboard</button>
-                <button type="button" class="modal-button" onclick="nextLevel()">Next Level</button>
-                <button type="button" class="modal-button" onclick="closeModal()">Close</button>
-            </form>
+            <p style="color: green; font-size: 14px; margin-top: 15px;">✓ Score automatically saved to leaderboard</p>
+            <div style="display: flex; gap: 10px; margin-top: 20px; flex-direction: column;">
+                <button type="button" class="modal-button green-button" onclick="nextLevel()">Next Level</button>
+                <a href="index.html" class="modal-button modal-link">Return Home</a>
+            </div>
         </div>
     </div>
 
@@ -72,7 +84,7 @@
             </table>
             <div class="scoreboard-actions">
                 <button class="modal-button" onclick="playAgain()">Play Again</button>
-                <button class="modal-button" onclick="nextLevel()">Next Level</button>
+                <button class="modal-button green-button" onclick="nextLevel()">Next Level</button>
                 <a href="index.html" class="modal-button modal-link">Home</a>
             </div>
         </div>

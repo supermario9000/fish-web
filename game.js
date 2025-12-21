@@ -2,18 +2,115 @@
 const params = new URLSearchParams(window.location.search);
 const level = params.get('level') || 'easy'; // Default to 'easy' if no parameter
 
-// Hide all level containers
-document.querySelectorAll('.level-container').forEach(div => {
-    div.classList.add('hidden');
-});
+// Initialize selectedLevel globally
+let selectedLevel = document.getElementById(`level-${level}`);
 
-// Show the selected level
-const selectedLevel = document.getElementById(`level-${level}`);
-if (selectedLevel) {
-    selectedLevel.classList.remove('hidden');
+// Check for username in sessionStorage, show entry modal if not present
+let storedUsername = sessionStorage.getItem('playerUsername');
+if (!storedUsername) {
+    document.getElementById('username-entry-modal').classList.remove('hidden');
+    document.querySelectorAll('.level-container').forEach(div => div.classList.add('hidden'));
+} else {
+    document.getElementById('username-entry-modal').classList.add('hidden');
+    // Hide all level containers
+    document.querySelectorAll('.level-container').forEach(div => {
+        div.classList.add('hidden');
+    });
+    // Show the selected level
+    if (selectedLevel) {
+        selectedLevel.classList.remove('hidden');
+    }
 }
 
-// Card counts and layout per level
+// Global variable to store existing usernames for validation
+let existingUsernames = new Set();
+
+// Fetch all existing usernames from leaderboards
+async function loadExistingUsernames() {
+    try {
+        const levels = ['easy', 'medium', 'hard'];
+        for (const lvl of levels) {
+            const response = await fetch('save-score.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ level: lvl, action: 'get_all' })
+            });
+            const data = await response.json();
+            if (data.entries && Array.isArray(data.entries)) {
+                data.entries.forEach(entry => {
+                    existingUsernames.add(entry.username.toLowerCase());
+                });
+            }
+        }
+    } catch (err) {
+        console.error('Error loading usernames:', err);
+    }
+}
+
+// Handle username entry modal
+document.addEventListener('DOMContentLoaded', () => {
+    // Load existing usernames first
+    loadExistingUsernames();
+    
+    const usernameInput = document.getElementById('username-entry-input');
+    const usernameForm = document.getElementById('username-entry-form');
+    const errorDiv = document.getElementById('username-entry-error');
+    const submitBtn = document.getElementById('username-entry-button');
+    
+    if (usernameInput) {
+        usernameInput.addEventListener('input', () => {
+            validateUsernameEntry();
+        });
+    }
+    
+    if (usernameForm) {
+        usernameForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = usernameInput.value.trim();
+            const hasError = validateUsernameEntry();
+            if (!hasError && username.length >= 4) {
+                // Store in sessionStorage
+                sessionStorage.setItem('playerUsername', username);
+                // Hide modal and show level
+                document.getElementById('username-entry-modal').classList.add('hidden');
+                const selectedLevel = document.getElementById(`level-${level}`);
+                if (selectedLevel) {
+                    selectedLevel.classList.remove('hidden');
+                }
+            }
+        });
+    }
+});
+
+function validateUsernameEntry() {
+    const usernameInput = document.getElementById('username-entry-input');
+    const errorDiv = document.getElementById('username-entry-error');
+    const submitBtn = document.getElementById('username-entry-button');
+    const username = usernameInput.value.trim();
+    let error = '';
+    
+    // Check length
+    if (username.length < 4) {
+        error = `Username too short (${username.length}/4 characters)`;
+    }
+    // Check if username already exists
+    else if (existingUsernames.has(username.toLowerCase())) {
+        error = 'Username already exists. Please choose a different one.';
+    }
+    
+    if (error) {
+        errorDiv.textContent = error;
+        errorDiv.style.display = 'block';
+        submitBtn.disabled = true;
+        return true;
+    } else {
+        errorDiv.textContent = '';
+        errorDiv.style.display = 'none';
+        submitBtn.disabled = false;
+        return false;
+    }
+}
+
 const levelConfig = {
     easy: { count: 8, cols: 4, rows: 2 },
     medium: { count: 12, cols: 4, rows: 3 },
@@ -255,15 +352,44 @@ function restart() {
 
 // Modal and Scoreboard functions
 function showCompletionModal(time, pts, errs) {
+    const username = sessionStorage.getItem('playerUsername');
+    document.getElementById('modal-player').textContent = username || 'Guest';
     document.getElementById('modal-time').textContent = time.toFixed(3);
     document.getElementById('modal-score').textContent = pts;
     document.getElementById('modal-mistakes').textContent = errs;
     document.getElementById('completion-modal').classList.remove('hidden');
+    
+    // Auto-save score
+    if (username) {
+        saveToScoreboard(username, time, pts, errs);
+    }
+}
+
+function closeCompletionModal() {
+    document.getElementById('completion-modal').classList.add('hidden');
+}
+
+function viewScoreboard() {
+    // Show scoreboard modal
+    document.getElementById('completion-modal').classList.add('hidden');
+    const username = sessionStorage.getItem('playerUsername');
+    // Fetch and display leaderboard
+    fetch('save-score.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ level, action: 'get' })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.entries) {
+                showScoreboard(data.entries, username, finalTime);
+            }
+        })
+        .catch(err => console.error('Error fetching leaderboard:', err));
 }
 
 function closeModal() {
     document.getElementById('completion-modal').classList.add('hidden');
-    document.getElementById('scoreboard-form').reset();
 }
 
 function playAgain() {
@@ -290,7 +416,7 @@ function saveToScoreboard(username, time, pts, errs) {
         mistakes: errs
     };
     
-    // Save to backend via PHP
+    // Save to backend via PHP silently
     fetch('save-score.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -298,17 +424,14 @@ function saveToScoreboard(username, time, pts, errs) {
     })
         .then(response => response.json())
         .then(data => {
-            if (data.success || data.entries) {
-                showScoreboard(data.entries, username, time);
-                closeCompletionModal();
-            } else {
-                throw new Error(data.error || 'Unknown error');
+            if (data.entries) {
+                // Store entries for leaderboard display later
+                if (!window.leaderboardData) window.leaderboardData = {};
+                window.leaderboardData[level] = data.entries;
             }
         })
         .catch(err => {
             console.error('Error saving score:', err);
-            alert('Error saving score. Make sure PHP is enabled on your server.');
-            closeModal();
         });
 }
 
@@ -319,6 +442,10 @@ function closeCompletionModal() {
 function showScoreboard(entries, currentUsername, currentTime) {
     const levelNames = { easy: 'Easy', medium: 'Medium', hard: 'Hard' };
     document.getElementById('scoreboard-level').textContent = levelNames[level] || 'Unknown';
+    
+    // Store leaderboard data globally for duplicate checking
+    if (!window.leaderboardData) window.leaderboardData = {};
+    window.leaderboardData[level] = entries;
     
     const tbody = document.getElementById('scoreboard-body');
     tbody.innerHTML = '';
@@ -372,17 +499,53 @@ function showScoreboard(entries, currentUsername, currentTime) {
 
 // Scoreboard form submission
 document.addEventListener('DOMContentLoaded', () => {
+    const usernameInput = document.getElementById('username');
     const form = document.getElementById('scoreboard-form');
+    
+    if (usernameInput) {
+        usernameInput.addEventListener('input', validateUsername);
+    }
+    
     if (form) {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
-            const username = document.getElementById('username').value;
-            if (username.trim()) {
+            const username = usernameInput.value.trim();
+            const hasError = validateUsername();
+            if (!hasError && username) {
                 saveToScoreboard(username, finalTime, score, mistakes);
             }
         });
     }
 });
+
+function validateUsername() {
+    const usernameInput = document.getElementById('username');
+    const errorDiv = document.getElementById('username-error');
+    const username = usernameInput.value.trim();
+    let error = '';
+    
+    // Check minimum length
+    if (username.length < 4) {
+        error = 'Username must be at least 4 letters';
+    }
+    // Check if username is already taken (fetch from current leaderboard)
+    else if (window.leaderboardData && window.leaderboardData[level]) {
+        const isTaken = window.leaderboardData[level].some(entry => entry.username.toLowerCase() === username.toLowerCase());
+        if (isTaken) {
+            error = 'Username already taken';
+        }
+    }
+    
+    if (error) {
+        errorDiv.textContent = error;
+        errorDiv.style.display = 'block';
+        return true;
+    } else {
+        errorDiv.textContent = '';
+        errorDiv.style.display = 'none';
+        return false;
+    }
+}
 
 // Compute a card width that fits both container width and height
 function sizeCardsToContainer(container, cfg) {
