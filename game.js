@@ -72,6 +72,51 @@ function buildDeck(count) {
 let openCards = [];
 let lockBoard = false;
 
+// Animation frame lists
+const ANIM_FRAMES = {
+    cloud: [
+        'assets/animation pngs/appear disappear cloud/debesis_anim_1.png',
+        'assets/animation pngs/appear disappear cloud/debesis_anim_2.png',
+        'assets/animation pngs/appear disappear cloud/debesis_anim_3.png',
+        'assets/animation pngs/appear disappear cloud/debesis_anim_4.png',
+        'assets/animation pngs/appear disappear cloud/debesis_anim_5.png',
+        'assets/animation pngs/appear disappear cloud/debesis_anim_6.png',
+        'assets/animation pngs/appear disappear cloud/debesis_anim_7.png',
+        'assets/animation pngs/appear disappear cloud/debesis_anim_8.png',
+        'assets/animation pngs/appear disappear cloud/debesis_anim_9.png',
+        'assets/animation pngs/appear disappear cloud/debesis_anim_10.png',
+        'assets/animation pngs/appear disappear cloud/debesis_anim_11.png',
+        'assets/animation pngs/appear disappear cloud/debesis_anim_12.png',
+        'assets/animation pngs/appear disappear cloud/debesis_anim_13.png',
+        'assets/animation pngs/appear disappear cloud/debesis_anim_14.png',
+        'assets/animation pngs/appear disappear cloud/debesis_anim_15.png',
+        'assets/animation pngs/appear disappear cloud/debesis_anim_16.png'
+    ]
+};
+
+function playFrames(cardEl, frames, fps = 24, options = {}) {
+    const { className = '', onComplete, onMidpoint } = options;
+    const overlay = document.createElement('div');
+    overlay.className = `anim-overlay ${className}`.trim();
+    const img = document.createElement('img');
+    overlay.appendChild(img);
+    cardEl.appendChild(overlay);
+    let i = 0;
+    const midpoint = Math.floor(frames.length / 2);
+    const interval = setInterval(() => {
+        img.src = frames[i];
+        if (i === midpoint && typeof onMidpoint === 'function') {
+            onMidpoint();
+        }
+        i++;
+        if (i >= frames.length) {
+            clearInterval(interval);
+            overlay.remove();
+            if (typeof onComplete === 'function') onComplete();
+        }
+    }, Math.max(16, Math.floor(1000 / fps)));
+}
+
 function renderCards(container, deck) {
     container.innerHTML = '';
     deck.forEach(symbolId => {
@@ -81,6 +126,7 @@ function renderCards(container, deck) {
 
         const inner = document.createElement('div');
         inner.className = 'card-inner';
+        inner.style.visibility = 'hidden'; // Hide card faces until animation reaches 50%
 
         const front = document.createElement('div');
         front.className = 'card-face front';
@@ -101,6 +147,14 @@ function renderCards(container, deck) {
         cardEl.addEventListener('click', () => onCardClick(cardEl));
 
         container.appendChild(cardEl);
+
+        // Play appear/disappear cloud on load; show card faces at 50%
+        playFrames(cardEl, ANIM_FRAMES.cloud, 16, {
+            className: 'cloud',
+            onMidpoint: () => {
+                inner.style.visibility = 'visible';
+            }
+        });
     });
 }
 
@@ -108,26 +162,30 @@ function onCardClick(cardEl) {
     if (lockBoard) return;
     if (cardEl.classList.contains('flipped')) return;
     if (!cardEl.isConnected) return;
-
     cardEl.classList.add('flipped');
     openCards.push(cardEl);
-
     if (openCards.length === 2) {
-        lockBoard = true;
-        const [c1, c2] = openCards;
-        const match = c1.dataset.symbol === c2.dataset.symbol;
-        if (match) {
-            setTimeout(() => {
-                // hide matched cards, keep them in grid to preserve layout
-                c1.classList.add('matched');
-                c2.classList.add('matched');
+        handlePair();
+    }
+}
+
+// Hover effects handled purely by CSS for unflipped cards
+
+function handlePair() {
+    lockBoard = true;
+    const [c1, c2] = openCards;
+    const match = c1.dataset.symbol === c2.dataset.symbol;
+    if (match) {
+        // Play cloud on both cards; hide at 50%, then mark matched and update stats
+        let completed = 0;
+        const done = () => {
+            completed++;
+            if (completed === 2) {
                 score += 1;
                 matchedCount += 2;
                 updateStats();
                 openCards = [];
                 lockBoard = false;
-                
-                // Check if game is won
                 const cfg = levelConfig[level];
                 if (matchedCount === cfg.count) {
                     stopTimer();
@@ -135,23 +193,49 @@ function onCardClick(cardEl) {
                     finalTime = elapsed;
                     showCompletionModal(elapsed, score, mistakes);
                 }
-            }, 400);
-        } else {
-            setTimeout(() => {
-                c1.classList.remove('flipped');
-                c2.classList.remove('flipped');
-                mistakes += 1;
-                updateStats();
-                openCards = [];
-                lockBoard = false;
-            }, 800);
-        }
+            }
+        };
+        playFrames(c1, ANIM_FRAMES.cloud, 16, {
+            className: 'cloud',
+            onMidpoint: () => {
+                c1.querySelector('.card-inner').style.visibility = 'hidden';
+            },
+            onComplete: () => {
+                c1.classList.add('matched');
+                done();
+            }
+        });
+        playFrames(c2, ANIM_FRAMES.cloud, 16, {
+            className: 'cloud',
+            onMidpoint: () => {
+                c2.querySelector('.card-inner').style.visibility = 'hidden';
+            },
+            onComplete: () => {
+                c2.classList.add('matched');
+                done();
+            }
+        });
+    } else {
+        setTimeout(() => {
+            c1.classList.remove('flipped');
+            c2.classList.remove('flipped');
+            mistakes += 1;
+            updateStats();
+            openCards = [];
+            lockBoard = false;
+        }, 500);
     }
 }
 
 // Start / restart helpers
 function startGame() {
     if (!selectedLevel) return;
+    
+    // Hide start screen and show level container
+    const startScreen = document.getElementById('start-screen');
+    if (startScreen) startScreen.classList.add('hidden');
+    if (selectedLevel) selectedLevel.classList.remove('hidden');
+    
     mistakes = 0;
     score = 0;
     matchedCount = 0;
