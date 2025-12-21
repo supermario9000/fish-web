@@ -196,8 +196,8 @@ function saveToScoreboard(username, time, pts, errs) {
         mistakes: errs
     };
     
-    // Save to backend server
-    fetch('/api/save-score', {
+    // Save to backend via PHP
+    fetch('save-score.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(entry)
@@ -213,7 +213,7 @@ function saveToScoreboard(username, time, pts, errs) {
         })
         .catch(err => {
             console.error('Error saving score:', err);
-            alert('Error saving score to server. Please ensure the server is running on port 3000.');
+            alert('Error saving score. Make sure PHP is enabled on your server.');
             closeModal();
         });
 }
