@@ -47,13 +47,20 @@ function displayLeaderboard(entries) {
         return;
     }
 
-    entries.slice(0, 10).forEach((entry, index) => {
+    const sorted = entries.slice().sort((a, b) => {
+        const movesA = (a.moves ?? a.score ?? Number.MAX_SAFE_INTEGER);
+        const movesB = (b.moves ?? b.score ?? Number.MAX_SAFE_INTEGER);
+        if (movesA !== movesB) return movesA - movesB;
+        return (a.time ?? 0) - (b.time ?? 0);
+    });
+
+    sorted.slice(0, 10).forEach((entry, index) => {
         const movesValue = entry.moves ?? entry.score ?? '—';
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${index + 1}</td>
             <td>${entry.username}</td>
-            <td>${entry.time.toFixed(3)}</td>
+            <td>${(entry.time ?? 0).toFixed(3)}</td>
             <td>${movesValue}</td>
             <td>${entry.mistakes}</td>
         `;

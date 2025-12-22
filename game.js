@@ -451,8 +451,16 @@ function showScoreboard(entries, currentUsername, currentTime) {
     const tbody = document.getElementById('scoreboard-body');
     tbody.innerHTML = '';
     
+    // Sort by moves asc, then time asc (fallback to legacy score if moves missing)
+    const sorted = entries.slice().sort((a, b) => {
+        const movesA = (a.moves ?? a.score ?? Number.MAX_SAFE_INTEGER);
+        const movesB = (b.moves ?? b.score ?? Number.MAX_SAFE_INTEGER);
+        if (movesA !== movesB) return movesA - movesB;
+        return (a.time ?? 0) - (b.time ?? 0);
+    });
+
     // Get top 10 entries
-    const top10 = entries.slice(0, 10);
+    const top10 = sorted.slice(0, 10);
     let userRank = -1;
     
     // Check if current user is in top 10
@@ -468,27 +476,29 @@ function showScoreboard(entries, currentUsername, currentTime) {
         if (entry.username === currentUsername && entry.time === currentTime) {
             row.classList.add('user-row');
         }
+        const movesValue = entry.moves ?? entry.score ?? '—';
         row.innerHTML = `
             <td>${index + 1}</td>
             <td>${entry.username}</td>
-            <td>${entry.time.toFixed(3)}</td>
-            <td>${entry.score}</td>
+            <td>${(entry.time ?? 0).toFixed(3)}</td>
+            <td>${movesValue}</td>
             <td>${entry.mistakes}</td>
         `;
         tbody.appendChild(row);
     });
     
     // If user is not in top 10, show them at position 11+
-    if (userRank === -1 && entries.length > 10) {
-        const userIndex = entries.findIndex(e => e.username === currentUsername && e.time === currentTime);
+    if (userRank === -1 && sorted.length > 10) {
+        const userIndex = sorted.findIndex(e => e.username === currentUsername && e.time === currentTime);
         if (userIndex !== -1) {
             const row = document.createElement('tr');
             row.classList.add('user-row');
+            const movesValue = sorted[userIndex].moves ?? sorted[userIndex].score ?? '—';
             row.innerHTML = `
                 <td>${userIndex + 1}</td>
                 <td>${currentUsername}</td>
-                <td>${currentTime.toFixed(3)}</td>
-                <td>${score}</td>
+                <td>${(currentTime ?? 0).toFixed(3)}</td>
+                <td>${movesValue}</td>
                 <td>${mistakes}</td>
             `;
             tbody.appendChild(row);

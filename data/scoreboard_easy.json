@@ -6,6 +6,13 @@
             "moves": 5,
             "mistakes": 1,
             "date": "2025-12-22T10:31:53+00:00"
+        },
+        {
+            "username": "hackerPRO123",
+            "time": 0.432,
+            "moves": 4,
+            "mistakes": 0,
+            "date": "2025-12-25T14:15:00+00:00"
         }
     ]
 }
