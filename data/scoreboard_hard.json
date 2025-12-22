@@ -1,25 +1,5 @@
 {
     "entries": [
-        {
-            "username": "brbr",
-            "time": 30.17,
-            "score": 8,
-            "mistakes": 6,
-            "date": "2025-12-21T20:40:13+00:00"
-        },
-        {
-            "username": "brbr",
-            "time": 32.498,
-            "score": 8,
-            "mistakes": 8,
-            "date": "2025-12-21T20:38:15+00:00"
-        },
-        {
-            "username": "lebron",
-            "time": 34.423,
-            "score": 8,
-            "mistakes": 10,
-            "date": "2025-12-21T20:12:02+00:00"
-        }
+        
     ]
 }

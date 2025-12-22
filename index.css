@@ -205,8 +205,7 @@ img {
 }
 
 
-
-@media (max-width: 768px) {
+@media (max-width: 1100px) {
 	.title_img {
 		margin-left: 10%;
 		margin-top: 2vh;
@@ -271,7 +270,7 @@ img {
 }
 
 /* Mobile devices (480px and below) */
-@media (max-width: 480px) {
+@media (max-width: 640px) {
 	body {
 		width: 100vw;
 		height: 100vh;
@@ -284,26 +283,25 @@ img {
 		width: 100%;
 		height: 100%;
 		overflow: auto;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 	}
 
 	.title_img {
-		margin-left: 5%;
-		margin-top: 2vh;
-		width: 70vw;
+		margin: 2vh auto 0;
+		width: 90vw;
 	}
 
 	.big_turtle_img {
-		margin-left: 55%;
-		margin-top: -10vh;
-		max-width: 40vw;
+		display: none;
 	}
 
 	.level_container {
 		position: relative;
-		margin-left: 0;
-		margin-top: 5vh;
-		padding: 0 10px;
-		width: 100%;
+		margin: 5vh auto 0;
+		padding: 0 5% 8vh;
+		width: 90%;
 		box-sizing: border-box;
 	}
 
@@ -318,12 +316,12 @@ img {
 	}
 
 	.container_img_1 {
-		width: 70%;
+		width: 80%;
 		height: auto;
 	}
 
 	.start_button {
-		width: 25%;
+		width: 20%;
 		height: auto;
 		aspect-ratio: 1.5 / 1;
 		margin-top: 0;
@@ -405,8 +403,7 @@ img {
 	}
 
 	.big_turtle_img {
-		margin-left: 60%;
-		max-width: 35vw;
+		display: none;
 	}
 
 	.level_container {
@@ -414,7 +411,7 @@ img {
 	}
 
 	.container_img_1 {
-		width: 65%;
+		width: 75%;
 	}
 
 	.leaderboard-btn {

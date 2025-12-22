@@ -113,14 +113,14 @@ function validateUsernameEntry() {
 
 const levelConfig = {
     easy: { count: 8, cols: 4, rows: 2 },
-    medium: { count: 12, cols: 4, rows: 3 },
-    hard: { count: 16, cols: 4, rows: 4 }
+    medium: { count: 20, cols: 4, rows: 5 },
+    hard: { count: 32, cols: 8, rows: 4 }
 };
 
 let timerInterval = null;
 let timerStart = null;
 let mistakes = 0;
-let score = 0;
+let moves = 0;
 let matchedCount = 0;
 let finalTime = 0;
 
@@ -148,9 +148,9 @@ function startTimer() {
 
 function updateStats() {
     const mistakesEl = document.getElementById('mistake-count');
-    const scoreEl = document.getElementById('score-value');
+    const movesEl = document.getElementById('score-value');
     if (mistakesEl) mistakesEl.textContent = mistakes;
-    if (scoreEl) scoreEl.textContent = score;
+    if (movesEl) movesEl.textContent = moves;
 }
 
 // Build deck of symbol pairs for the selected level
@@ -278,7 +278,7 @@ function handlePair() {
         const done = () => {
             completed++;
             if (completed === 2) {
-                score += 1;
+                moves += 1;
                 matchedCount += 2;
                 updateStats();
                 openCards = [];
@@ -288,7 +288,7 @@ function handlePair() {
                     stopTimer();
                     const elapsed = Math.floor((performance.now() - timerStart) / 1000 * 1000) / 1000;
                     finalTime = elapsed;
-                    showCompletionModal(elapsed, score, mistakes);
+                    showCompletionModal(elapsed, moves, mistakes);
                 }
             }
         };
@@ -317,6 +317,7 @@ function handlePair() {
             c1.classList.remove('flipped');
             c2.classList.remove('flipped');
             mistakes += 1;
+            moves += 1;
             updateStats();
             openCards = [];
             lockBoard = false;
@@ -334,7 +335,7 @@ function startGame() {
     if (selectedLevel) selectedLevel.classList.remove('hidden');
     
     mistakes = 0;
-    score = 0;
+    moves = 0;
     matchedCount = 0;
     updateStats();
     startTimer();
@@ -412,7 +413,7 @@ function saveToScoreboard(username, time, pts, errs) {
         username,
         level,
         time,
-        score: pts,
+        moves: pts,
         mistakes: errs
     };
     

@@ -48,12 +48,13 @@ function displayLeaderboard(entries) {
     }
 
     entries.slice(0, 10).forEach((entry, index) => {
+        const movesValue = entry.moves ?? entry.score ?? '—';
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${index + 1}</td>
             <td>${entry.username}</td>
             <td>${entry.time.toFixed(3)}</td>
-            <td>${entry.score}</td>
+            <td>${movesValue}</td>
             <td>${entry.mistakes}</td>
         `;
         tbody.appendChild(row);

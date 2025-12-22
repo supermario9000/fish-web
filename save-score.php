@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
     
     if (!isset($input['username']) || !isset($input['level']) || !isset($input['time']) || 
-        !isset($input['score']) || !isset($input['mistakes'])) {
+        !isset($input['moves']) || !isset($input['mistakes'])) {
         http_response_code(400);
         echo json_encode(['error' => 'Missing required fields']);
         exit;
@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = htmlspecialchars($input['username']);
     $level = htmlspecialchars($input['level']);
     $time = floatval($input['time']);
-    $score = intval($input['score']);
+    $moves = intval($input['moves']);
     $mistakes = intval($input['mistakes']);
 
     // Validate level
@@ -56,15 +56,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $entry = [
             'username' => $username,
             'time' => $time,
-            'score' => $score,
+            'moves' => $moves,
             'mistakes' => $mistakes,
             'date' => date('c')
         ];
 
         $data['entries'][] = $entry;
 
-        // Sort by time ascending (fastest first)
+        // Sort by moves ascending (fewest first), then by time
         usort($data['entries'], function($a, $b) {
+            $movesCompare = $a['moves'] <=> $b['moves'];
+            if ($movesCompare !== 0) {
+                return $movesCompare;
+            }
             return $a['time'] <=> $b['time'];
         });
 
