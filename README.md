@@ -18,4 +18,6 @@ https://github.com/supermario9000/Web-UI-design/tree/personal_data_form
 I didn't feel too much passion about this project. No release will be made.  
 
 4 project:
-Upcoming.
+A memory card game made with JavaScript, personal artwork and a PHP backend leaderboard.  
+https://github.com/supermario9000/Web-UI-design/tree/Memory-card-game-Tiny-Turntles  
+There has not yet been a release drafted.  
